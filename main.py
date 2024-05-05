@@ -41,8 +41,8 @@ Trap = Object(appearance="*", pushable=False, collision=False, size="None")
 Spring = Object(appearance="@", pushable=False, collision=False, size="None")
 SpringPositionsX = [2, 5]
 SpringPositionsY = [1, 3]
-TrapPositionsX = [2, 4, 7]
-TrapPositionsY = [3, 2, 3]
+SpringPositions = [(2, 1), (5, 3)]
+TrapPositions = [(2, 3), (4, 2), (7, 3)]
 Is_Jumping = False
 turn = 0
 level = [[Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall], [Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall]]
@@ -52,14 +52,10 @@ def LevelPrint():
     print(turn)
     level[Player.position_y][Player.position_x] = Player
     level[Win.position_y][Win.position_x] = Win
-    if len(TrapPositionsX) != len(TrapPositionsY):
-        raise UnequalClassError
-    for a in range(len(TrapPositionsX)):
-        level[TrapPositionsY[a]][TrapPositionsX[a]] = Trap
-    if len(SpringPositionsX) != len(SpringPositionsY):
-        raise UnequalClassError
-    for a in range(len(SpringPositionsX)):
-        level[SpringPositionsY[a]][SpringPositionsX[a]] = Spring
+    for a in range(len(TrapPositions)):
+        level[TrapPositions[a][1]][TrapPositions[a][0]] = Trap
+    for a in range(len(SpringPositions)):
+        level[SpringPositions[a][1]][SpringPositions[a][0]] = Spring
     for x in range(len(level)):
         NowLine = []
         for y in range(len(level[x])):
@@ -95,9 +91,8 @@ def PlayerMove(direction):
         elif direction == "U" or direction == "Up" or direction == "UP" or direction == "u" or direction == "up":
             Player.position_y -= 2
             level[Player.position_y + 2][Player.position_x] = Empty
-    if not (Player.position_x, Player.position_y) in (SpringPositionsX, SpringPositionsY):
+    if not (Player.position_x, Player.position_y) in SpringPositions:
         Is_Jumping = False
-    print(f"X = {Player.position_x}   Y = {Player.position_y}")
 
 
 def PlayGame():
@@ -106,13 +101,13 @@ def PlayGame():
     while (not Player.position_x == Win.position_x) or (not Player.position_y == Win.position_y):
         if not failed:
             LevelPrint()
-            if (Player.position_x, Player.position_y) in (SpringPositionsX, SpringPositionsY):
+            if (Player.position_x, Player.position_y) in SpringPositions:
                 Is_Jumping = True
             moving_into = input("Move in direction ")
             if moving_into == "quit" or moving_into == "q" or moving_into == "Quit" or moving_into == "Q" or moving_into == "QUIT":
                 raise QuitInterrupt
             PlayerMove(moving_into)
-            if (Player.position_x, Player.position_y) in (TrapPositionsX, TrapPositionsY):
+            if (Player.position_x, Player.position_y) in TrapPositions:
                 failed = True
         else:
             print("You lose!")
