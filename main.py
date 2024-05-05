@@ -13,6 +13,10 @@ class UnequalClassError(Exception):
     pass
 
 
+class QuitInterrupt(Exception):
+    pass
+
+
 @dataclass
 class Object:
     appearance: str = ""
@@ -34,8 +38,12 @@ Empty = Object(appearance=".", pushable=False, collision=False, size="None")
 Wall = Object(appearance="#", pushable=False, collision=True, size="None")
 Win = Object(appearance="W", pushable=False, collision=False, size="None", position_x=7, position_y=1)
 Trap = Object(appearance="*", pushable=False, collision=False, size="None")
+Spring = Object(appearance="@", pushable=False, collision=False, size="None")
+SpringPositionsX = [2, 5]
+SpringPositionsY = [1, 3]
 TrapPositionsX = [2, 4, 7]
 TrapPositionsY = [3, 2, 3]
+Is_Jumping = False
 turn = 0
 level = [[Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall], [Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall]]
 def LevelPrint():
@@ -48,6 +56,10 @@ def LevelPrint():
         raise UnequalClassError
     for a in range(len(TrapPositionsX)):
         level[TrapPositionsY[a]][TrapPositionsX[a]] = Trap
+    if len(SpringPositionsX) != len(SpringPositionsY):
+        raise UnequalClassError
+    for a in range(len(SpringPositionsX)):
+        level[SpringPositionsY[a]][SpringPositionsX[a]] = Spring
     for x in range(len(level)):
         NowLine = []
         for y in range(len(level[x])):
@@ -56,26 +68,49 @@ def LevelPrint():
 
 
 def PlayerMove(direction):
-    if direction == "R" or direction == "Right" or direction == "RIGHT" or direction == "r" or direction == "right":
-        Player.position_x += 1
-        level[Player.position_y][Player.position_x - 1] = Empty
-    elif direction == "L" or direction == "Left" or direction == "LEFT" or direction == "l" or direction == "left":
-        Player.position_x -= 1
-        level[Player.position_y][Player.position_x + 1] = Empty
-    elif direction == "D" or direction == "Down" or direction == "DOWN" or direction == "d" or direction == "down":
-        Player.position_y += 1
-        level[Player.position_y - 1][Player.position_x] = Empty
-    elif direction == "U" or direction == "Up" or direction == "UP" or direction == "u" or direction == "up":
-        Player.position_y -= 1
-        level[Player.position_y + 1][Player.position_x] = Empty
+    global Is_Jumping
+    if not Is_Jumping:
+        if direction == "R" or direction == "Right" or direction == "RIGHT" or direction == "r" or direction == "right":
+            Player.position_x += 1
+            level[Player.position_y][Player.position_x - 1] = Empty
+        elif direction == "L" or direction == "Left" or direction == "LEFT" or direction == "l" or direction == "left":
+            Player.position_x -= 1
+            level[Player.position_y][Player.position_x + 1] = Empty
+        elif direction == "D" or direction == "Down" or direction == "DOWN" or direction == "d" or direction == "down":
+            Player.position_y += 1
+            level[Player.position_y - 1][Player.position_x] = Empty
+        elif direction == "U" or direction == "Up" or direction == "UP" or direction == "u" or direction == "up":
+            Player.position_y -= 1
+            level[Player.position_y + 1][Player.position_x] = Empty
+    else:
+        if direction == "R" or direction == "Right" or direction == "RIGHT" or direction == "r" or direction == "right":
+            Player.position_x += 2
+            level[Player.position_y][Player.position_x - 2] = Empty
+        elif direction == "L" or direction == "Left" or direction == "LEFT" or direction == "l" or direction == "left":
+            Player.position_x -= 2
+            level[Player.position_y][Player.position_x + 2] = Empty
+        elif direction == "D" or direction == "Down" or direction == "DOWN" or direction == "d" or direction == "down":
+            Player.position_y += 2
+            level[Player.position_y - 2][Player.position_x] = Empty
+        elif direction == "U" or direction == "Up" or direction == "UP" or direction == "u" or direction == "up":
+            Player.position_y -= 2
+            level[Player.position_y + 2][Player.position_x] = Empty
+    if not (Player.position_x, Player.position_y) in (SpringPositionsX, SpringPositionsY):
+        Is_Jumping = False
+    print(f"X = {Player.position_x}   Y = {Player.position_y}")
 
 
 def PlayGame():
+    global Is_Jumping
     failed = False
     while (not Player.position_x == Win.position_x) or (not Player.position_y == Win.position_y):
         if not failed:
             LevelPrint()
+            if (Player.position_x, Player.position_y) in (SpringPositionsX, SpringPositionsY):
+                Is_Jumping = True
             moving_into = input("Move in direction ")
+            if moving_into == "quit" or moving_into == "q" or moving_into == "Quit" or moving_into == "Q" or moving_into == "QUIT":
+                raise QuitInterrupt
             PlayerMove(moving_into)
             if (Player.position_x, Player.position_y) in (TrapPositionsX, TrapPositionsY):
                 failed = True
