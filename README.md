@@ -10,6 +10,6 @@ I still have many things I want to add, and I accept help from anyone. The follo
  - [ ] Twin Push (a group of pushable blocks that when you push one, the others get pushed the same way)
  - [ ] Move Block (a block that moves when you move)
  - [ ] Merge Push (a block that grows when pushed into another one of its kind)
- - [ ] Bouncy Block (no collision, when you walk off from it, you go two blocks instead of one. There could be a 3 block variant)
+ - [x] Bouncy Block (no collision, when you walk off from it, you go two blocks instead of one. There could be a 3 block variant)
 
 That is all you need to know.
