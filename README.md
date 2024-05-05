@@ -11,5 +11,6 @@ I still have many things I want to add, and I accept help from anyone. The follo
  - [ ] Move Block (a block that moves when you move)
  - [ ] Merge Push (a block that grows when pushed into another one of its kind)
  - [x] Bouncy Block (no collision, when you walk off from it, you go two blocks instead of one. There could be a 3 block variant)
+ - [ ] Ice (no collision, throws you further when you step on it)
 
 That is all you need to know.
