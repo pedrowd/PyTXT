@@ -36,22 +36,27 @@ class Object:
 Player = Object(appearance="P", pushable=True, size="Medium", collision=True, position_x=1, position_y=3)
 Empty = Object(appearance=".", pushable=False, collision=False, size="None")
 Wall = Object(appearance="#", pushable=False, collision=True, size="None")
-Win = Object(appearance="W", pushable=False, collision=False, size="None", position_x=7, position_y=1)
+Win = Object(appearance="W", pushable=False, collision=False, size="None", position_x=10, position_y=0)
 Trap = Object(appearance="*", pushable=False, collision=False, size="None")
 Spring = Object(appearance="@", pushable=False, collision=False, size="None")
-SpringPositionsX = [2, 5]
-SpringPositionsY = [1, 3]
-SpringPositions = [(2, 1), (5, 3)]
+PortalA = Object(appearance="0", pushable=False, collision=False, size="None")
+PortalB = Object(appearance="0", pushable=False, collision=False, size="None")
+SpringPositionsX = [2, 5, 7]
+SpringPositionsY = [1, 3, 2]
+SpringPositions = [(2, 1), (5, 3), (7, 2)]
 TrapPositions = [(2, 3), (4, 2), (7, 3)]
+PortalPositions = [(10, 4), (8, 0)]
 Is_Jumping = False
 turn = 0
-level = [[Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall], [Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall]]
+level = [[Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Empty, Empty, Empty, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall, Wall, Wall, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall, Empty, Empty, Wall], [Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall, Empty, Empty, Wall], [Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Wall, Empty, Wall]]
 def LevelPrint():
     global turn
     turn += 1
     print(turn)
     level[Player.position_y][Player.position_x] = Player
     level[Win.position_y][Win.position_x] = Win
+    level[PortalPositions[0][1]][PortalPositions[0][0]] = PortalA
+    level[PortalPositions[1][1]][PortalPositions[1][0]] = PortalB
     for a in range(len(TrapPositions)):
         level[TrapPositions[a][1]][TrapPositions[a][0]] = Trap
     for a in range(len(SpringPositions)):
@@ -93,6 +98,9 @@ def PlayerMove(direction):
             level[Player.position_y + 2][Player.position_x] = Empty
     if not (Player.position_x, Player.position_y) in SpringPositions:
         Is_Jumping = False
+    if Player.position_x == PortalPositions[0][0] and Player.position_y == PortalPositions[0][1]:
+        Player.position_x = PortalPositions[1][0]
+        Player.position_y = PortalPositions[1][1]
 
 
 def PlayGame():
